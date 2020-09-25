@@ -103,10 +103,39 @@ public:
                 matrix[ti] -= matrix[i] * matrix[ti][_basis[i]];
             }
         }
+
+		_basis = basis;
     }
 
     void basisExchange(int var1, int var2) {
-        matrix[var1][var2];
+		if (var1 == var2) return;
+
+		int ib = 0;
+		while (ib < _basis.size() && _basis[ib] != var1) {
+			ib++;
+		}
+		if (ib >= basis.size()) throw "Var1 not in basis";
+
+        T controlElement = matrix[ib][var2];
+		if (controlElement == 0) throw "Impossible basis exchange";
+
+		matrix[ib] /= controlElement;
+		for (int i = 0; i < ib; i++) {
+			matrix[i] -= matrix[ib] * matrix[i][var2];
+		}
+		for (int i = ib + 1; i < _size; i++) {
+			matrix[i] -= matrix[ib] * matrix[i][var2];
+		}
+
+		if (ib < var2) {
+			int i = ib + 1;
+			while (i < _basis.size() && _basis[i] < var2) {
+				_basis[i - 1] = _basis[i];
+				swapStrings(i - 1, i);
+				i++;
+			}
+			_basis[i - 1] = var2;
+		}
     }
 
     void swapStrings(int index1, int index2) {
