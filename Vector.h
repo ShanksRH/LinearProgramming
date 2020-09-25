@@ -14,6 +14,18 @@ public:
         this->vector = new T[size];
     }
 
+	Vector(const Vector& v) : _size(v._size) {
+		this->vector = new T[_size];
+		for (int i = 0; i < this->_size; i++) {
+			this->vector[i] = v.vector[i];
+		}
+	}
+
+	Vector(Vector&& v) : _size(v._size) {
+		this->vector = v.vector;
+		v.vector = nullptr;
+	}
+
     Vector& operator+=(const Vector& v) {
         for (int i = 0; i < this->_size; i++) {
             this->vector[i] += v.vector[i];

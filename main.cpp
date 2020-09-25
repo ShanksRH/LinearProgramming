@@ -10,7 +10,9 @@ T gcd(T a, T b) {
 }
 
 int main() {
-    lp::Matrix< lp::Fraction<int> > matrix(2, 2);
+	int m, n;
+	std::cin >> m >> n;
+    lp::Matrix< lp::Fraction<int> > matrix(m, n);
 
     for (int i = 0; i < matrix.m(); i++) {
         for (int j = 0; j < matrix.n(); j++) {
@@ -20,6 +22,8 @@ int main() {
 
     std::cout << std::endl;
     std::cout << std::endl;
+
+	matrix.eliminate();
 
     for (int i = 0; i < matrix.m(); i++) {
         for (int j = 0; j < matrix.n(); j++) {

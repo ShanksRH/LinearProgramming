@@ -28,6 +28,10 @@ public:
         return this->matrix[index];
     }
 
+	void truncate(int newSize) {
+		this->_size = newSize;
+	}
+
     void eliminate() {
         int ti, j = 0, i = 0;
 
@@ -45,17 +49,18 @@ public:
 
             if (ti != i) swapStrings(ti, i);
 
-            matrix[i] /= matrix[i][j];
+			T controlElement = matrix[i][j];
+            matrix[i] /= controlElement;
 
             for (ti = i + 1; ti < _size; ti++) {
-                matrix[ti] -= matrix[i] * matrix[ti][j];
+                matrix[ti] -= matrix[i] * matrix[ti][j];;
             }
 
             i++;
             _basis.push_back(j++);
         }
 
-        truncate(i--);
+        this->truncate(i--);
 
         while (i > 0) {
             for (ti = 0; ti < i; ti++) {
@@ -70,7 +75,7 @@ public:
         if (newBasis.size() > _size) throw "Basis size bigger than number of string";
 
         std::vector<int> basis(newBasis);
-        std::sort(basis);
+        std::sort(basis.begin(), basis.end());
 
         for (int i = 0; i < basis.size(); i++) {
             int j = basis[i];
