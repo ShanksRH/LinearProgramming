@@ -14,6 +14,15 @@ int main() {
 
     for (int i = 0; i < matrix.m(); i++) {
         for (int j = 0; j < matrix.n(); j++) {
+            std::cin >> matrix[i][j];
+        }
+    }
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    for (int i = 0; i < matrix.m(); i++) {
+        for (int j = 0; j < matrix.n(); j++) {
             std::cout << matrix[i][j] << " | ";
         }
         std::cout << std::endl;

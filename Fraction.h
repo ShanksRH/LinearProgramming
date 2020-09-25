@@ -146,7 +146,8 @@ public:
         do {
             ss << c;
             in.get(c);
-        } while (c >= ' ' && !in.eof() && c != '/');
+        } while (c > ' ' && !in.eof() && c != '/');
+
         ss >> f.num;
         ss.clear();
 
@@ -156,7 +157,7 @@ public:
         }
 
         in.get(c);
-        while (c >= ' ' && !in.eof()) {
+        while (c > ' ' && !in.eof()) {
             ss << c;
             in.get(c);
         }
