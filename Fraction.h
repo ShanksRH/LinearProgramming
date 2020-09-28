@@ -72,6 +72,12 @@ public:
     Fraction& operator/=(const Fraction& f) {
         this->num *= f.denom;
         this->denom *= f.num;
+
+        if (this->denom < 0) {
+            this->denom *= -1;
+            this->num *= -1;
+        }
+
         this->reduce();
 
         return *this;

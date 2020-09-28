@@ -1,7 +1,7 @@
 #include <iostream>
-#include "Matrix.h"
-#include "Fraction.h"
 #include <time.h>
+#include "Fraction.h"
+#include "Matrix.h"
 
 template<class T>
 T gcd(T a, T b) {
@@ -18,6 +18,7 @@ int main() {
         for (int j = 0; j < matrix.n(); j++) {
             std::cin >> matrix[i][j];
         }
+        std::cin >> matrix.constants[i];
     }
 
     std::cout << std::endl;
@@ -27,9 +28,9 @@ int main() {
 
     for (int i = 0; i < matrix.m(); i++) {
         for (int j = 0; j < matrix.n(); j++) {
-            std::cout << matrix[i][j] << " | ";
+            std::cout << matrix[i][j] << "  ";
         }
-        std::cout << std::endl;
+        std::cout << " | " << matrix.constants[i] << std::endl;
     }
 
     return 0;

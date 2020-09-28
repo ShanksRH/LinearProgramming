@@ -16,8 +16,11 @@ private:
     std::vector<int> _basis = {};
 
 public:
+    T* constants = nullptr;
+
     Matrix(int m, int n) : _size(m) {
         this->matrix = new Vector<T>[m];
+        this->constants = new T[m];
 
         for (int i = 0; i < m; i++) {
             this->matrix[i].resize(n);
@@ -51,9 +54,11 @@ public:
 
 			T controlElement = matrix[i][j];
             matrix[i] /= controlElement;
+            constants[i] /= controlElement;
 
             for (ti = i + 1; ti < _size; ti++) {
-                matrix[ti] -= matrix[i] * matrix[ti][j];;
+                matrix[ti] -= matrix[i] * matrix[ti][j];
+                constants[ti] -= constants[i] * matrix[ti][j];
             }
 
             i++;
@@ -64,6 +69,7 @@ public:
 
         while (i > 0) {
             for (ti = 0; ti < i; ti++) {
+                constants[ti] -= constants[i] * matrix[ti][_basis[i]];
                 matrix[ti] -= matrix[i] * matrix[ti][_basis[i]];
             }
 
@@ -91,15 +97,19 @@ public:
 
             if (ti != i) swapStrings(ti, i);
 
-            matrix[i] /= matrix[i][j];
+            T controlElement = matrix[i][j];
+            matrix[i] /= controlElement;
+            constants[i] /= controlElement;
 
             for (ti = i + 1; ti < _size; ti++) {
+                constants[ti] -= constants[i] * matrix[ti][j];
                 matrix[ti] -= matrix[i] * matrix[ti][j];
             }
         }
 
         for (int i = basis.size() - 1; i > 0; i--) {
             for (int ti = 0; ti < i; ti++) {
+                constants[ti] -= constants[i] * matrix[ti][_basis[i]];
                 matrix[ti] -= matrix[i] * matrix[ti][_basis[i]];
             }
         }
@@ -120,10 +130,13 @@ public:
 		if (controlElement == 0) throw "Impossible basis exchange";
 
 		matrix[ib] /= controlElement;
+        constants[ib] /= controlElement;
 		for (int i = 0; i < ib; i++) {
+            constants[i] -= constants[ib] * matrix[i][var2];
 			matrix[i] -= matrix[ib] * matrix[i][var2];
 		}
 		for (int i = ib + 1; i < _size; i++) {
+            constants[i] -= constants[ib] * matrix[i][var2];
 			matrix[i] -= matrix[ib] * matrix[i][var2];
 		}
 
@@ -140,6 +153,9 @@ public:
 
     void swapStrings(int index1, int index2) {
         this->matrix[index1].swap(this->matrix[index2]);
+        T t = constants[index1];
+        constants[index1] = constants[index2];
+        constants[index2] = t;
     }
 
     int m() const {
@@ -152,7 +168,9 @@ public:
 
     ~Matrix() {
         delete[] this->matrix;
+        delete[] this->constants;
         this->matrix = nullptr;
+        this->constants = nullptr;
         this->_size = 0;
     }
 };
