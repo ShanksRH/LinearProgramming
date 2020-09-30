@@ -53,12 +53,12 @@ public:
             if (ti != i) swapStrings(ti, i);
 
 			T controlElement = matrix[i][j];
-            matrix[i] /= controlElement;
             constants[i] /= controlElement;
+            matrix[i] /= controlElement;
 
             for (ti = i + 1; ti < _size; ti++) {
-                matrix[ti] -= matrix[i] * matrix[ti][j];
                 constants[ti] -= constants[i] * matrix[ti][j];
+                matrix[ti] -= matrix[i] * matrix[ti][j];
             }
 
             i++;
@@ -98,8 +98,8 @@ public:
             if (ti != i) swapStrings(ti, i);
 
             T controlElement = matrix[i][j];
-            matrix[i] /= controlElement;
             constants[i] /= controlElement;
+            matrix[i] /= controlElement;
 
             for (ti = i + 1; ti < _size; ti++) {
                 constants[ti] -= constants[i] * matrix[ti][j];
@@ -109,8 +109,8 @@ public:
 
         for (int i = basis.size() - 1; i > 0; i--) {
             for (int ti = 0; ti < i; ti++) {
-                constants[ti] -= constants[i] * matrix[ti][_basis[i]];
-                matrix[ti] -= matrix[i] * matrix[ti][_basis[i]];
+                constants[ti] -= constants[i] * matrix[ti][basis[i]];
+                matrix[ti] -= matrix[i] * matrix[ti][basis[i]];
             }
         }
 
@@ -124,7 +124,7 @@ public:
 		while (ib < _basis.size() && _basis[ib] != var1) {
 			ib++;
 		}
-		if (ib >= basis.size()) throw "Var1 not in basis";
+		if (ib >= _basis.size()) throw "Var1 not in basis";
 
         T controlElement = matrix[ib][var2];
 		if (controlElement == 0) throw "Impossible basis exchange";
@@ -148,6 +148,14 @@ public:
 				i++;
 			}
 			_basis[i - 1] = var2;
+		} else {
+			int i = ib - 1;
+			while (i >= 0 && _basis[i] > var2) {
+				_basis[i + 1] = _basis[i];
+				swapStrings(i + 1, i);
+				i--;
+			}
+			_basis[i + 1] = var2;
 		}
     }
 
@@ -165,6 +173,21 @@ public:
     int n() const {
         return this->matrix[0].size();
     }
+
+	std::vector<int> basis() const {
+		return _basis;
+	}
+
+	std::vector<T> solution() const {
+		std::vector<T> res = {};
+		res.resize(this->n());
+
+		for (int i = 0; i < _basis.size(); i++) {
+			res[_basis[i]] = constants[i];
+		}
+
+		return res;
+	}
 
     ~Matrix() {
         delete[] this->matrix;
