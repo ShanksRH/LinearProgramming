@@ -26,6 +26,20 @@ public:
 		v.vector = nullptr;
 	}
 
+    Vector& operator=(const Vector& v) {
+        this = new Vector(v);
+
+        return *this;
+    }
+
+    Vector& operator=(Vector&& v) {
+        this->_size = v._size;
+        this->vector = v.vector;
+		v.vector = nullptr;
+
+        return *this;
+    }
+
     Vector& operator+=(const Vector& v) {
         for (int i = 0; i < this->_size; i++) {
             this->vector[i] += v.vector[i];

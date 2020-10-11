@@ -19,12 +19,26 @@ public:
     T* constants = nullptr;
 
     Matrix(int m, int n) : _size(m) {
-        this->matrix = new Vector<T>[m];
-        this->constants = new T[m];
+        this->matrix = new Vector<T>[this->_size];
+        this->constants = new T[this->_size];
 
-        for (int i = 0; i < m; i++) {
+        for (int i = 0; i < this->_size; i++) {
             this->matrix[i].resize(n);
         }
+    }
+
+    Matrix(const Matrix& matrix) : _size(matrix._size) {
+        this->matrix = new Vector<T>[this->_size];
+        this->constants = new T[this->_size];
+
+        for (int i = 0; i < this->_size; i++) {
+            this->matrix[i] = matrix.matrix[i];
+        }
+    }
+
+    Matrix(Matrix&& matrix) : _size(matrix._size) {
+        this->matrix = matrix.matrix;
+        matrix.matrix = nullptr;
     }
 
     Vector<T>& operator[](int index) {
@@ -75,6 +89,13 @@ public:
 
             i--;
         }
+    }
+
+    Matrix eliminated() const {
+        Matrix res(*this);
+        res.eliminate();
+
+        return res;
     }
 
     void toBasis(const std::vector<int>& newBasis) {
