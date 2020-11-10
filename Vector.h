@@ -27,7 +27,12 @@ public:
 	}
 
 	Vector& operator=(const Vector& v) {
-		this = new Vector(v);
+		this->_size = v._size;
+		this->vector = new T[_size];
+
+		for (int i = 0; i < this->_size; i++) {
+			this->vector[i] = v.vector[i];
+		}
 
 		return *this;
 	}
@@ -96,7 +101,7 @@ public:
 		return res;
 	}
 
-	T& operator[](int index) {
+	T& operator[](int index) const {
 		return this->vector[index];
 	}
 

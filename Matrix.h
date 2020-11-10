@@ -41,7 +41,7 @@ public:
 		matrix.matrix = nullptr;
 	}
 
-	Vector<T>& operator[](int index) {
+	Vector<T>& operator[](int index) const {
 		return this->matrix[index];
 	}
 
@@ -98,8 +98,8 @@ public:
 		return res;
 	}
 
-	void toBasis(const std::vector<int>& newBasis) {
-		if (newBasis.size() > _size) throw "Basis size bigger than number of string";
+	void setBasis(const std::vector<int>& newBasis) {
+		if (newBasis.size() > _size) throw "Basis size bigger than number of strings";
 
 		std::vector<int> basis(newBasis);
 		std::sort(basis.begin(), basis.end());
@@ -136,6 +136,13 @@ public:
 		}
 
 		_basis = basis;
+	}
+
+	Matrix toBasis(const std::vector<int>& newBasis) const {
+		Matrix res(*this);
+		res.setBasis(newBasis);
+
+		return res;
 	}
 
 	void basisExchange(int var1, int var2) {
