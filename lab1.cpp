@@ -3,11 +3,15 @@
 #include "Fraction.h"
 #include "Matrix.h"
 
-lp::Fraction<int> calcZFunc(
-	const std::vector< lp::Fraction<int> >& z,
-	const std::vector< lp::Fraction<int> >& solution
-) {
+template <class T>
+T calcZFunc(const std::vector<T>& z, const std::vector<T>& solution) {
+	T res(0);
 
+	for (int i = 0; i < z.size(); i++) {
+		res += z[i] * solution[i];
+	}
+
+	return res;
 }
 
 template <class T>
@@ -65,9 +69,9 @@ int main() {
 	std::cout << "Sizes:" << std::endl;
 	std::cin >> m >> n;
 
-	lp::Matrix< lp::Fraction<int> > matrix(m, n);
-	std::vector< lp::Fraction<int> > z;
-	z.resize(matrix.n() + 1);
+	lp::Matrix< lp::Fraction<int64_t> > matrix(m, n);
+	std::vector< lp::Fraction<int64_t> > z;
+	z.resize(matrix.n());
 
 	std::cout << std::endl;
 	std::cout << "Matrix + constants:" << std::endl;
@@ -87,6 +91,7 @@ int main() {
 
 	auto pureMatrix = matrix.eliminated();
 	auto basises = combinations(pureMatrix.n(), pureMatrix.m());
+	auto maxZVal = lp::Fraction<int64_t>(0);
 
 	for (auto& basis : basises) {
 		std::cout << "Basis: ";
@@ -103,10 +108,28 @@ int main() {
 			std::cout << "Solution: ";
 			printVector(std::cout, solution);
 			std::cout << std::endl;
+
+			bool onlyPositive = true;
+			for (auto& val : solution) {
+				onlyPositive = onlyPositive && (val >= 0);
+			}
+			if (onlyPositive) {
+				std::cout << "No negative elements" << std::endl;
+				auto zVal = calcZFunc(z, solution);
+				std::cout << "Z-value: " << zVal << std::endl;
+				if (zVal > maxZVal) {
+					maxZVal = zVal;
+				}
+			}
+
+			std::cout << std::endl;
+			std::cout << std::endl;
 		} catch (...) {
 			std::cout << "Impossible basis" << std::endl;
 		}
 	}
+
+	std::cout << "Best Z-value: " << maxZVal << std::endl;
 
 	return 0;
 }
