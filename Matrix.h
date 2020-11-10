@@ -33,12 +33,15 @@ public:
 
 		for (int i = 0; i < this->_size; i++) {
 			this->matrix[i] = matrix.matrix[i];
+			this->constants[i] = matrix.constants[i];
 		}
 	}
 
 	Matrix(Matrix&& matrix) : _size(matrix._size) {
 		this->matrix = matrix.matrix;
+		this->constants = matrix.constants;
 		matrix.matrix = nullptr;
+		matrix.constants = nullptr;
 	}
 
 	Vector<T>& operator[](int index) const {
