@@ -95,6 +95,12 @@ private:
 		return res;
 	}
 
+	Fraction operator-() const {
+		Fraction<T> res = *this;
+		res.num *= -1;
+		return res;
+	}
+
 	Fraction operator*(const Fraction& f) const {
 		Fraction<T> res = *this;
 		res *= f;
