@@ -1,6 +1,7 @@
 #ifndef SIMPLEX_TABLEAU_H
 #define SIMPLEX_TABLEAU_H
 
+#include "iostream"
 #include <vector>
 #include "Matrix.h"
 
@@ -18,8 +19,10 @@ public:
 
 	bool step() {
 		int j = 1;
-		while (j < z.size() && z[j] > 0) j++;
+		while (j < z.size() && z[j] >= 0) j++;
 		if (j >= z.size()) return false;
+
+		j--;
 
 		int i = 0;
 		while (i < matrix.m() && matrix[i][j] <= 0) i++;
@@ -53,7 +56,31 @@ public:
 			matrix[i] -= matrix[imin] * matrix[i][j];
 		}
 
+		T t = z[j + 1];
+		z[0] -= t * matrix.constants[imin];
+		for (i = 1; i < z.size(); i++) {
+			z[i] -= t * matrix[imin][i - 1];
+		}
+
 		return true;
+	}
+
+	T result() {
+		return z[0];
+	}
+
+	void print(std::ostream& os) {
+		for (int i = 0; i < matrix.m(); i++) {
+			os << matrix.constants[i] << " | ";
+			for (int j = 0; j < matrix.n(); j++) {
+				os << matrix[i][j] << ' ';
+			}
+			os << std::endl;
+		}
+		os << "-  ";
+		for (auto& val : z) {
+			os << val << ' ';
+		}
 	}
 };
 

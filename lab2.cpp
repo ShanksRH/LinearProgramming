@@ -2,6 +2,7 @@
 #include <time.h>
 #include "Fraction.h"
 #include "Matrix.h"
+#include "SimplexTableau.h"
 
 template <class T>
 T calcZFunc(const std::vector<T>& z, const std::vector<T>& solution) {
@@ -59,6 +60,20 @@ int main() {
 		std::cin >> z[i];
 	}
 	std::cout << std::endl;
+
+	lp::SimplexTableau< lp::Fraction<int64_t> > tableau(matrix, z);
+
+	try {
+		bool can_do_step = tableau.step();
+
+		while (can_do_step) {
+			can_do_step = tableau.step();
+		}
+
+		std::cout << "Result: " << tableau.result() << std::endl;
+	} catch (...) {
+		std::cout << "Unexpected error";
+	}
 
 	return 0;
 }
