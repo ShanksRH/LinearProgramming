@@ -1,5 +1,4 @@
-#ifndef LPVECTOR_H
-#define LPVECTOR_H
+#pragma once
 
 namespace lp {
 
@@ -133,5 +132,3 @@ public:
 };
 
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef LPMATRIX_H
-#define LPMATRIX_H
+#pragma once
 
 #include <algorithm>
 #include <sstream>
@@ -230,5 +229,3 @@ public:
 };
 
 }
-
-#endif

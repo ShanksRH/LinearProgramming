@@ -1,5 +1,4 @@
-#ifndef LPFRACTION_H
-#define LPFRACTION_H
+#pragma once
 
 #include <iostream>
 #include <sstream>
@@ -185,5 +184,3 @@ private:
 };
 
 }
-
-#endif

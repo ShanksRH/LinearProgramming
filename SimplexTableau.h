@@ -1,5 +1,4 @@
-#ifndef SIMPLEX_TABLEAU_H
-#define SIMPLEX_TABLEAU_H
+#pragma once
 
 #include "iostream"
 #include <vector>
@@ -85,5 +84,3 @@ public:
 };
 
 }
-
-#endif
