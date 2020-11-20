@@ -2,36 +2,17 @@
 #include <time.h>
 #include "Fraction.h"
 #include "Matrix.h"
+#include "utils.h"
 
 template <class T>
 T calcZFunc(const std::vector<T>& z, const std::vector<T>& solution) {
-	T res(0);
+	T res = z[0];
 
-	for (int i = 0; i < z.size(); i++) {
-		res += z[i] * solution[i];
+	for (int i = 0; i < solution.size(); i++) {
+		res += z[i + 1] * solution[i];
 	}
 
 	return res;
-}
-
-template <class T>
-void printVector(std::ostream& out, const std::vector<T>& v) {
-	out << "(";
-	for (int i = 0; i < v.size() - 1; i++) {
-		out << v[i] << ' ';
-	}
-	out << v.back() << ")";
-}
-
-template <class T>
-void printMatrix(std::ostream& out, const lp::Matrix<T>& matrix) {
-	for (int i = 0; i < matrix.m(); i++) {
-		for (int j = 0; j < matrix.n(); j++) {
-			out << matrix[i][j] << ' ';
-		}
-
-		out << "| " << matrix.constants[i] << std::endl;
-	}
 }
 
 std::vector< std::vector<int> > combinations(int n, int k) {
@@ -64,34 +45,15 @@ std::vector< std::vector<int> > combinations(int n, int k) {
 }
 
 int main() {
-	int m, n;
+	typedef lp::Fraction<int64_t> basetype;
 
-	std::cout << "Sizes:" << std::endl;
-	std::cin >> m >> n;
-
-	lp::Matrix< lp::Fraction<int64_t> > matrix(m, n);
-	std::vector< lp::Fraction<int64_t> > z;
-	z.resize(matrix.n());
-
-	std::cout << std::endl;
-	std::cout << "Matrix + constants:" << std::endl;
-	for (int i = 0; i < matrix.m(); i++) {
-		for (int j = 0; j < matrix.n(); j++) {
-			std::cin >> matrix[i][j];
-		}
-		std::cin >> matrix.constants[i];
-	}
-
-	std::cout << std::endl;
-	std::cout << "Z-func:" << std::endl;
-	for (int i = 0; i < z.size(); i++) {
-		std::cin >> z[i];
-	}
-	std::cout << std::endl;
+	auto [m, n] = inputMatrixSizes(std::cin);
+	auto matrix = inputMatrixWithConstants<basetype>(std::cin, m, n);
+	auto z = inputZ<basetype>(std::cin, n + 1);
 
 	auto pureMatrix = matrix.eliminated();
 	auto basises = combinations(pureMatrix.n(), pureMatrix.m());
-	auto maxZVal = lp::Fraction<int64_t>(0);
+	auto maxZVal = basetype(0);
 
 	for (auto& basis : basises) {
 		std::cout << "Basis: ";
@@ -122,7 +84,6 @@ int main() {
 				}
 			}
 
-			std::cout << std::endl;
 			std::cout << std::endl;
 		} catch (...) {
 			std::cout << "Impossible basis" << std::endl;
