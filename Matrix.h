@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <sstream>
 #include <vector>
 #include "Vector.h"
@@ -12,7 +11,6 @@ class Matrix {
 private:
 	Vector<T>* matrix = nullptr;
 	int _size = 0;
-	std::vector<int> _basis = {};
 
 public:
 	T* constants = nullptr;
@@ -51,10 +49,30 @@ public:
 		this->_size = newSize;
 	}
 
-	void eliminate() {
-		int ti, j = 0, i = 0;
+	void gaussStep(int i, int j) {
+		T controlElement = matrix[i][j];
 
-		_basis.clear();
+		if (controlElement == 0) throw "Divide on zero";
+
+		matrix[i] /= controlElement;
+		constants[i] /= controlElement;
+
+		for (int ti = 0; ti < i; ti++) {
+			controlElement = matrix[ti][j];
+			matrix[ti] -= matrix[i] * controlElement;
+			constants[ti] -= constants[i] * controlElement;
+		}
+
+		for (int ti = i + 1; ti < _size; ti++) {
+			controlElement = matrix[ti][j];
+			matrix[ti] -= matrix[i] * controlElement;
+			constants[ti] -= constants[i] * controlElement;
+		}
+	}
+
+	std::vector<int> eliminate() {
+		int ti, j = 0, i = 0;
+		std::vector<int> basis = {};
 
 		while (i < _size && j < matrix[0].size()) {
 			ti = i;
@@ -66,31 +84,14 @@ public:
 				continue;
 			}
 
-			if (ti != i) swapStrings(ti, i);
+			if (ti != i) swapLines(ti, i);
 
-			T controlElement = matrix[i][j];
-			constants[i] /= controlElement;
-			matrix[i] /= controlElement;
-
-			for (ti = i + 1; ti < _size; ti++) {
-				constants[ti] -= constants[i] * matrix[ti][j];
-				matrix[ti] -= matrix[i] * matrix[ti][j];
-			}
-
-			i++;
-			_basis.push_back(j++);
+			this->gaussStep(i++, j);
+			basis.push_back(j++);
 		}
 
-		this->truncate(i--);
-
-		while (i > 0) {
-			for (ti = 0; ti < i; ti++) {
-				constants[ti] -= constants[i] * matrix[ti][_basis[i]];
-				matrix[ti] -= matrix[i] * matrix[ti][_basis[i]];
-			}
-
-			i--;
-		}
+		this->truncate(i);
+		return basis;
 	}
 
 	Matrix eliminated() const {
@@ -100,11 +101,8 @@ public:
 		return res;
 	}
 
-	void setBasis(const std::vector<int>& newBasis) {
-		if (newBasis.size() > _size) throw "Basis size bigger than number of strings";
-
-		std::vector<int> basis(newBasis);
-		std::sort(basis.begin(), basis.end());
+	void setBasis(const std::vector<int>& basis) {
+		if (basis.size() > _size) throw "Basis size bigger than number of strings";
 
 		for (int i = 0; i < basis.size(); i++) {
 			int j = basis[i];
@@ -118,78 +116,20 @@ public:
 				throw ss.str();
 			}
 
-			if (ti != i) swapStrings(ti, i);
+			if (ti != i) swapLines(ti, i);
 
-			T controlElement = matrix[i][j];
-			constants[i] /= controlElement;
-			matrix[i] /= controlElement;
-
-			for (ti = i + 1; ti < _size; ti++) {
-				constants[ti] -= constants[i] * matrix[ti][j];
-				matrix[ti] -= matrix[i] * matrix[ti][j];
-			}
+			this->gaussStep(i, j);
 		}
-
-		for (int i = basis.size() - 1; i > 0; i--) {
-			for (int ti = 0; ti < i; ti++) {
-				constants[ti] -= constants[i] * matrix[ti][basis[i]];
-				matrix[ti] -= matrix[i] * matrix[ti][basis[i]];
-			}
-		}
-
-		_basis = basis;
 	}
 
-	Matrix toBasis(const std::vector<int>& newBasis) const {
+	Matrix toBasis(const std::vector<int>& basis) const {
 		Matrix res(*this);
-		res.setBasis(newBasis);
+		res.setBasis(basis);
 
 		return res;
 	}
 
-	void basisExchange(int var1, int var2) {
-		if (var1 == var2) return;
-
-		int ib = 0;
-		while (ib < _basis.size() && _basis[ib] != var1) {
-			ib++;
-		}
-		if (ib >= _basis.size()) throw "Var1 not in basis";
-
-		T controlElement = matrix[ib][var2];
-		if (controlElement == 0) throw "Impossible basis exchange";
-
-		matrix[ib] /= controlElement;
-		constants[ib] /= controlElement;
-		for (int i = 0; i < ib; i++) {
-			constants[i] -= constants[ib] * matrix[i][var2];
-			matrix[i] -= matrix[ib] * matrix[i][var2];
-		}
-		for (int i = ib + 1; i < _size; i++) {
-			constants[i] -= constants[ib] * matrix[i][var2];
-			matrix[i] -= matrix[ib] * matrix[i][var2];
-		}
-
-		if (ib < var2) {
-			int i = ib + 1;
-			while (i < _basis.size() && _basis[i] < var2) {
-				_basis[i - 1] = _basis[i];
-				swapStrings(i - 1, i);
-				i++;
-			}
-			_basis[i - 1] = var2;
-		} else {
-			int i = ib - 1;
-			while (i >= 0 && _basis[i] > var2) {
-				_basis[i + 1] = _basis[i];
-				swapStrings(i + 1, i);
-				i--;
-			}
-			_basis[i + 1] = var2;
-		}
-	}
-
-	void swapStrings(int index1, int index2) {
+	void swapLines(int index1, int index2) {
 		this->matrix[index1].swap(this->matrix[index2]);
 		T t = constants[index1];
 		constants[index1] = constants[index2];
@@ -204,16 +144,12 @@ public:
 		return this->matrix[0].size();
 	}
 
-	std::vector<int> basis() const {
-		return _basis;
-	}
-
-	std::vector<T> solution() const {
+	std::vector<T> solution(const std::vector<int>& basis) const {
 		std::vector<T> res = {};
 		res.resize(this->n());
 
-		for (int i = 0; i < _basis.size(); i++) {
-			res[_basis[i]] = constants[i];
+		for (int i = 0; i < basis.size(); i++) {
+			res[basis[i]] = constants[i];
 		}
 
 		return res;

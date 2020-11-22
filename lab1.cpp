@@ -62,7 +62,7 @@ int main() {
 
 		try {
 			auto currentMatrix = pureMatrix.toBasis(basis);
-			auto solution = currentMatrix.solution();
+			auto solution = currentMatrix.solution(basis);
 
 			std::cout << "Matrix:" << std::endl;
 			printMatrix(std::cout, currentMatrix);
