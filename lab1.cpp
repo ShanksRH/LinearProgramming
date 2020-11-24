@@ -1,5 +1,4 @@
 #include <iostream>
-#include <time.h>
 #include "Fraction.h"
 #include "Matrix.h"
 #include "utils.h"

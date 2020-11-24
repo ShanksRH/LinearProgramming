@@ -41,19 +41,7 @@ public:
 			}
 		}
 
-		T controlElement = matrix[imin][j];
-		matrix.constants[imin] /= controlElement;
-		matrix[imin] /= controlElement;
-
-		for (i = 0; i < imin; i++) {
-			matrix.constants[i] -= matrix.constants[imin] * matrix[i][j];
-			matrix[i] -= matrix[imin] * matrix[i][j];
-		}
-
-		for (i = imin + 1; i < matrix.m(); i++) {
-			matrix.constants[i] -= matrix.constants[imin] * matrix[i][j];
-			matrix[i] -= matrix[imin] * matrix[i][j];
-		}
+		matrix.gaussStep(imin, j);
 
 		T t = z[j + 1];
 		z[0] -= t * matrix.constants[imin];
