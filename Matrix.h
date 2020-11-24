@@ -39,6 +39,18 @@ public:
 		this->constants = matrix.constants;
 		matrix.matrix = nullptr;
 		matrix.constants = nullptr;
+		matrix._size = 0;
+	}
+
+	Matrix& operator=(Matrix&& matrix) {
+		this->_size = matrix._size;
+		this->matrix = matrix.matrix;
+		this->constants = matrix.constants;
+		matrix.matrix = nullptr;
+		matrix.constants = nullptr;
+		matrix._size = 0;
+
+		return *this;
 	}
 
 	Vector<T>& operator[](int index) const {

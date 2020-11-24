@@ -15,7 +15,7 @@ class SimplexTableauArtific {
 	int artVarsNumber;
 
 public:
-	SimplexTableauArtific(const Matrix<T>& matrix) {
+	SimplexTableauArtific(const Matrix<T>& matrix) : matrix(0, 0) {
 		basis.resize(matrix.m());
 
 		for (auto& val : basis) val = -1;
@@ -37,7 +37,7 @@ public:
 		artVarsNumber = 0;
 		for (auto& val : basis) if (val == -1) val = matrix.n() + artVarsNumber++;
 
-		this->matrix = lp::Matrix<T>(matrix.m(), matrix.n() + artVarsNumber);
+		this->matrix = Matrix<T>(matrix.m(), matrix.n() + artVarsNumber);
 		for (int i = 0; i < matrix.m(); i++) {
 			for (int j = 0; j < matrix.n(); j++) {
 				this->matrix[i][j] = matrix[i][j];
@@ -113,7 +113,7 @@ public:
 		return true;
 	}
 
-	SimplexTableau toCommonSimplex(const std::vector<T>& z) {
+	SimplexTableau<T> toCommonSimplex(const std::vector<T>& z) {
 		Matrix<T> matrix(this->matrix.m(), this->matrix.n() - artVarsNumber);
 		std::vector<T> resultZ(z);
 
@@ -126,9 +126,9 @@ public:
 		for (int i = 0; i < basis.size(); i++) {
 			T controlElement = z[basis[i] + 1];
 			if (controlElement != 0) {
-				z[0] -= controlElement * matrix.constants[i];
+				resultZ[0] -= controlElement * matrix.constants[i];
 				for (int j = 1; j < z.size(); j++) {
-					z[j] -= controlElement * matrix[i][j - 1];
+					resultZ[j] -= controlElement * matrix[i][j - 1];
 				}
 			}
 		}
