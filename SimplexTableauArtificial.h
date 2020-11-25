@@ -38,6 +38,8 @@ public:
 		for (auto& val : basis) if (val == -1) val = matrix.n() + artVarsNumber++;
 
 		this->matrix = Matrix<T>(matrix.m(), matrix.n() + artVarsNumber);
+		this->f.resize(this->matrix.n() + 1);
+
 		for (int i = 0; i < matrix.m(); i++) {
 			for (int j = 0; j < matrix.n(); j++) {
 				this->matrix[i][j] = matrix[i][j];
@@ -47,22 +49,27 @@ public:
 
 		for (int i = 0; i < basis.size(); i++) {
 			T controlElement = this->matrix[i][basis[i]];
-			if (controlElement == 0) {
+			if (basis[i] >= matrix.n()) {
 				this->matrix[i][basis[i]] = 1;
+				f[0] += this->matrix.constants[i];
+				f[basis[i] + 1] = 1;
+				for (int j = 1; j < f.size(); j++) {
+					f[j] -= this->matrix[i][j - 1];
+				}
 			} else if (controlElement != 1) {
 				this->matrix[i] /= controlElement;
 				this->matrix.constants[i] /= controlElement;
 			}
 		}
 
-		this->f.resize(this->matrix.n() + 1);
-		for (int i = f.size() - artVarsNumber; i < f.size(); i++) f[i] = -1;
+		f[0] *= -1;
 	}
 
 	bool step() {
 		int j = 1;
 		while (j < f.size() && f[j] >= 0) j++;
 		if (j >= f.size()) return false;
+		j--;
 
 		int i = 0;
 		while (i < matrix.m() && matrix[i][j] <= 0) i++;
@@ -85,10 +92,10 @@ public:
 		matrix.gaussStep(imin, j);
 		basis[imin] = j;
 
-		T t = f[j];
+		T t = f[j + 1];
 		f[0] -= t * matrix.constants[imin];
-		for (i = 1; i < f.size(); i++) {
-			f[i] -= t * matrix[imin][i];
+		for (j = 1; j < f.size(); j++) {
+			f[j] -= t * matrix[imin][j - 1];
 		}
 
 		return true;
@@ -121,6 +128,7 @@ public:
 			for (int j = 0; j < matrix.n(); j++) {
 				matrix[i][j] = this->matrix[i][j];
 			}
+			matrix.constants[i] = this->matrix.constants[i];
 		}
 
 		for (int i = 0; i < basis.size(); i++) {
@@ -144,7 +152,7 @@ public:
 			}
 			os << std::endl;
 		}
-		os << "---  ";
+		os << "f ";
 		for (auto& val : f) {
 			os << val << ' ';
 		}

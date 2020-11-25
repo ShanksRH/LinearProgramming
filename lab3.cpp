@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <string>
 #include "Fraction.h"
@@ -55,22 +56,36 @@ lp::Matrix<T> toCanon(const lp::Matrix<T>& matrix, const std::vector<int>& limit
 
 int main() {
 	typedef lp::Fraction<int64_t> basetype;
+	std::ifstream in;
+	in.open("test.txt");
 
-	auto [m, n] = inputMatrixSizes(std::cin);
-	auto matrix = inputMatrixWithConstants<basetype>(std::cin, m, n);
-	auto limitations = inputLimitationsTypes(std::cin, m);
-	auto z = inputZ<basetype>(std::cin, n + 1);
+	auto [m, n] = inputMatrixSizes(in);
+	auto matrix = inputMatrixWithConstants<basetype>(in, m, n);
+	auto limitations = inputLimitationsTypes(in, m);
+	auto z = inputZ<basetype>(in, n + 1);
 
 	lp::SimplexTableauArtific<basetype> artTableau(toCanon(matrix, limitations));
 
-	printVector(std::cout, limitations);
-
 	try {
+		artTableau.print(std::cout);
+		std::cout << std::endl;
+		std::cout << std::endl;
+
 		bool can_do_step = artTableau.step();
+
+		std::cout << "art step 1" << std::endl;
+		artTableau.print(std::cout);
+		std::cout << std::endl;
+		std::cout << std::endl;
 
 		while (can_do_step) {
 			can_do_step = artTableau.step();
+			artTableau.print(std::cout);
+			std::cout << std::endl;
+			std::cout << std::endl;
 		}
+
+		std::cout << "art steps" << std::endl;
 
 		if (artTableau.controlF() != 0) {
 			std::cout << "max F != 0" << std::endl;
@@ -78,18 +93,41 @@ int main() {
 			return 0;
 		}
 
+		std::cout << "control" << std::endl;
+
 		can_do_step = artTableau.forceStep();
+
+		std::cout << "art force 1" << std::endl;
+		artTableau.print(std::cout);
+		std::cout << std::endl;
+		std::cout << std::endl;
 
 		while(can_do_step) {
 			artTableau.forceStep();
+			artTableau.print(std::cout);
+			std::cout << std::endl;
+			std::cout << std::endl;
 		}
 
-		auto tableau = artTableau.toCommonSimplex(z);
+		std::cout << "art forces" << std::endl;
 
-		can_do_step = artTableau.step();
+		auto tableau = artTableau.toCommonSimplex(z);
+		tableau.print(std::cout);
+		std::cout << std::endl;
+		std::cout << std::endl;
+
+		can_do_step = tableau.step();
+
+		std::cout << "common step 1" << std::endl;
+		tableau.print(std::cout);
+		std::cout << std::endl;
+		std::cout << std::endl;
 
 		while (can_do_step) {
-			can_do_step = artTableau.step();
+			can_do_step = tableau.step();
+			tableau.print(std::cout);
+			std::cout << std::endl;
+			std::cout << std::endl;
 		}
 
 		std::cout << "Result: " << tableau.result() << std::endl;

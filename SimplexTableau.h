@@ -64,7 +64,7 @@ public:
 			}
 			os << std::endl;
 		}
-		os << "-  ";
+		os << "z ";
 		for (auto& val : z) {
 			os << val << ' ';
 		}
