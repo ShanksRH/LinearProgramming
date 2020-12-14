@@ -128,7 +128,7 @@ lp::SimplexTableau<T> toM(const lp::Matrix<T>& matrix, const std::vector<T>& z) 
 int main() {
 	typedef lp::Fraction<int64_t> basetype;
 	std::ifstream in;
-	in.open("test.txt");
+	in.open("lab3.txt");
 
 	auto [m, n] = inputMatrixSizes(in);
 	auto matrix = inputMatrixWithConstants<basetype>(in, m, n);

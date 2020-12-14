@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include "Fraction.h"
 #include "Matrix.h"
@@ -45,10 +46,12 @@ std::vector< std::vector<int> > combinations(int n, int k) {
 
 int main() {
 	typedef lp::Fraction<int64_t> basetype;
+	std::ifstream in;
+	in.open("lab1.txt");
 
-	auto [m, n] = inputMatrixSizes(std::cin);
-	auto matrix = inputMatrixWithConstants<basetype>(std::cin, m, n);
-	auto z = inputZ<basetype>(std::cin, n + 1);
+	auto [m, n] = inputMatrixSizes(in);
+	auto matrix = inputMatrixWithConstants<basetype>(in, m, n);
+	auto z = inputZ<basetype>(in, n + 1);
 
 	auto pureMatrix = matrix.eliminated();
 	auto basises = combinations(pureMatrix.n(), pureMatrix.m());

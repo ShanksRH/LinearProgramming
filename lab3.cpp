@@ -57,7 +57,7 @@ lp::Matrix<T> toCanon(const lp::Matrix<T>& matrix, const std::vector<int>& limit
 int main() {
 	typedef lp::Fraction<int64_t> basetype;
 	std::ifstream in;
-	in.open("test.txt");
+	in.open("lab3.txt");
 
 	auto [m, n] = inputMatrixSizes(in);
 	auto matrix = inputMatrixWithConstants<basetype>(in, m, n);
@@ -92,8 +92,6 @@ int main() {
 
 			return 0;
 		}
-
-		std::cout << "control" << std::endl;
 
 		can_do_step = artTableau.forceStep();
 
